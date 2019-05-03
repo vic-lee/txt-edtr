@@ -12,7 +12,12 @@
 
 /*** data ***/
 
-struct termios orig_termios;
+struct editor_config
+{
+    struct termios orig_termios;
+};
+
+struct editor_config E;
 
 /*** terminal ***/
 
@@ -27,7 +32,7 @@ void die(const char *s)
 
 void disable_raw_mode()
 {
-    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios) == -1)
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &E.orig_termios) == -1)
         die("tcsetattr");
 }
 
@@ -44,12 +49,12 @@ void enable_raw_mode()
      *   c_cc: control characters
      */
 
-    if (tcgetattr(STDIN_FILENO, &orig_termios) == -1)
+    if (tcgetattr(STDIN_FILENO, &E.orig_termios) == -1)
         die("tcgetattr");
 
     atexit(disable_raw_mode); /* call `disable_raw_mode` when exit; whether from main or by exit() */
 
-    struct termios raw = orig_termios;
+    struct termios raw = E.orig_termios;
     raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
     raw.c_oflag &= ~(OPOST);
     raw.c_cflag |= (CS8);
@@ -95,7 +100,7 @@ void editor_refresh_screen()
     write(STDOUT_FILENO, "\x1b[H", 3);  /* reposition the cursor w/ the `H` cmd */
 
     editor_draw_rows();
-    
+
     write(STDOUT_FILENO, "\x1b[H", 3); /* reposition cursor back to top left after drawing `~` */
 }
 
