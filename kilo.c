@@ -232,6 +232,25 @@ void editor_refresh_screen()
 
 /*** input ***/
 
+void editor_move_cursor(char key)
+{
+    switch (key)
+    {
+    case 'a':
+        E.cx--;
+        break;
+    case 'd':
+        E.cx++;
+        break;
+    case 'w':
+        E.cy--;
+        break;
+    case 's':
+        E.cy++;
+        break;
+    }
+}
+
 void editor_process_keypress()
 {
     char c = editor_read_key();
@@ -242,6 +261,12 @@ void editor_process_keypress()
         write(STDOUT_FILENO, "\x1b[2J", 4);
         write(STDOUT_FILENO, "\x1b[H", 3);
         exit(0);
+        break;
+    case 'w':
+    case 's':
+    case 'a':
+    case 'd':
+        editor_move_cursor(c);
         break;
     }
 }
