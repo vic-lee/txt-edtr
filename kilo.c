@@ -186,12 +186,14 @@ void editor_refresh_screen()
 
     struct abuf ab = ABUF_INIT;
 
-    ab_append(&ab, "\x1b[2J", 4); /* clear the screen w/ the `J` cmd */
-    ab_append(&ab, "\x1b[H", 3);  /* reposition the cursor w/ the `H` cmd */
+    ab_append(&ab, "\x1b[?25l", 6); /* hide cursor when repainting */
+    ab_append(&ab, "\x1b[2J", 4);   /* clear the screen w/ the `J` cmd */
+    ab_append(&ab, "\x1b[H", 3);    /* reposition the cursor w/ the `H` cmd */
 
     editor_draw_rows(&ab);
 
-    ab_append(&ab, "\x1b[H", 3); /* reposition cursor back to top left after drawing `~` */
+    ab_append(&ab, "\x1b[H", 3);    /* reposition cursor back to top left after drawing `~` */
+    ab_append(&ab, "\x1b[?25h", 6); /* re-display cursor */
 
     write(STDOUT_FILENO, ab.b, ab.len);
 
