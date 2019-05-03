@@ -18,6 +18,9 @@ struct termios orig_termios;
 
 void die(const char *s)
 {
+    write(STDOUT_FILENO, "\x1b[2J", 4);
+    write(STDOUT_FILENO, "\x1b[H", 3);
+
     perror(s);
     exit(1);
 }
@@ -76,7 +79,7 @@ void editor_refresh_screen()
      * Note: 
      *   \x1b is the escape character, which corresponcs to 27.
      */
-    
+
     write(STDOUT_FILENO, "\x1b[2J", 4); /* clear the screen w/ the `J` cmd */
     write(STDOUT_FILENO, "\x1b[H", 3);  /* reposition the cursor w/ the `H` cmd */
 }
@@ -90,6 +93,8 @@ void editor_process_keypress()
     switch (c)
     {
     case CTRL_KEY('q'):
+        write(STDOUT_FILENO, "\x1b[2J", 4);
+        write(STDOUT_FILENO, "\x1b[H", 3);
         exit(0);
         break;
     }
