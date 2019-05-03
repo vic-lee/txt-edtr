@@ -170,7 +170,8 @@ void editor_draw_rows(struct abuf *ab)
     {
         ab_append(ab, "~", 1);
 
-        if (y < E.screenrows - 1) /* do not draw `\r\n` on the last line */
+        ab_append(ab, "\x1b[K", 3); /* K: erase in line */
+        if (y < E.screenrows - 1)   /* do not draw `\r\n` on the last line */
         {
             ab_append(ab, "\r\n", 2);
         }
@@ -187,7 +188,6 @@ void editor_refresh_screen()
     struct abuf ab = ABUF_INIT;
 
     ab_append(&ab, "\x1b[?25l", 6); /* hide cursor when repainting */
-    ab_append(&ab, "\x1b[2J", 4);   /* clear the screen w/ the `J` cmd */
     ab_append(&ab, "\x1b[H", 3);    /* reposition the cursor w/ the `H` cmd */
 
     editor_draw_rows(&ab);
