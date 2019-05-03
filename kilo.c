@@ -141,7 +141,7 @@ struct abuf
 
 #define ABUF_INIT \
     {             \
-        null, 0   \
+        NULL, 0   \
     } /* Empty buffer constructor */
 
 void ab_append(struct abuf *ab, const char *s, int len)
@@ -163,16 +163,16 @@ void ab_free(struct abuf *ab)
 
 /*** output ***/
 
-void editor_draw_rows()
+void editor_draw_rows(struct abuf *ab)
 {
     int y;
     for (y = 0; y < E.screenrows; y++)
     {
-        write(STDOUT_FILENO, "~", 1);
+        ab_append(ab, "~", 1);
 
         if (y < E.screenrows - 1) /* do not draw `\r\n` on the last line */
         {
-            write(STDOUT_FILENO, "\r\n", 2);
+            ab_append(ab, "\r\n", 2);
         }
     }
 }
@@ -184,12 +184,18 @@ void editor_refresh_screen()
      *   \x1b is the escape character, which corresponcs to 27.
      */
 
-    write(STDOUT_FILENO, "\x1b[2J", 4); /* clear the screen w/ the `J` cmd */
-    write(STDOUT_FILENO, "\x1b[H", 3);  /* reposition the cursor w/ the `H` cmd */
+    struct abuf ab = ABUF_INIT;
 
-    editor_draw_rows();
+    ab_append(&ab, "\x1b[2J", 4); /* clear the screen w/ the `J` cmd */
+    ab_append(&ab, "\x1b[H", 3);  /* reposition the cursor w/ the `H` cmd */
 
-    write(STDOUT_FILENO, "\x1b[H", 3); /* reposition cursor back to top left after drawing `~` */
+    editor_draw_rows(&ab);
+
+    ab_append(&ab, "\x1b[H", 3); /* reposition cursor back to top left after drawing `~` */
+
+    write(STDOUT_FILENO, ab.b, ab.len);
+
+    ab_free(&ab);
 }
 
 /*** input ***/
