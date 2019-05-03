@@ -144,6 +144,23 @@ struct abuf
         null, 0   \
     } /* Empty buffer constructor */
 
+void ab_append(struct abuf *ab, const char *s, int len)
+{
+    char *new = realloc(ab->b, ab->len + len); /* allocate mem if there's not enough for len (from s) */
+
+    if (new == NULL)
+        return;
+
+    memcpy(&new[ab->len], s, len); /* copy str into the buffer */
+    ab->b = new;                   /* update pointer */
+    ab->len += len;                /* update length */
+}
+
+void ab_free(struct abuf *ab)
+{
+    free(ab->b);
+}
+
 /*** output ***/
 
 void editor_draw_rows()
