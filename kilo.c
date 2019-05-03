@@ -70,6 +70,17 @@ char editor_read_key()
     return c;
 }
 
+void editor_refresh_screen()
+{
+    /**
+     * Note: 
+     *   \x1b is the escape character, which corresponcs to 27.
+     */
+    
+    write(STDOUT_FILENO, "\x1b[2J", 4); /* clear the screen w/ the `J` cmd */
+    write(STDOUT_FILENO, "\x1b[H", 3);  /* reposition the cursor w/ the `H` cmd */
+}
+
 /*** input ***/
 
 void editor_process_keypress()
@@ -92,6 +103,7 @@ int main()
 
     while (1)
     {
+        editor_refresh_screen();
         editor_process_keypress();
     }
 
