@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
@@ -129,6 +130,19 @@ int get_window_size(int *rows, int *cols)
         return 0;
     }
 }
+
+/*** append buffer ***/
+
+struct abuf
+{
+    char *b;
+    int len;
+};
+
+#define ABUF_INIT \
+    {             \
+        null, 0   \
+    } /* Empty buffer constructor */
 
 /*** output ***/
 
