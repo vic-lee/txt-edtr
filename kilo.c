@@ -73,6 +73,17 @@ char editor_read_key()
     return c;
 }
 
+/*** output ***/
+
+void editor_draw_rows()
+{
+    int y;
+    for (y = 0; y < 24; y++)
+    {
+        write(STDOUT_FILENO, "~\r\n", 3);
+    }
+}
+
 void editor_refresh_screen()
 {
     /**
@@ -82,6 +93,10 @@ void editor_refresh_screen()
 
     write(STDOUT_FILENO, "\x1b[2J", 4); /* clear the screen w/ the `J` cmd */
     write(STDOUT_FILENO, "\x1b[H", 3);  /* reposition the cursor w/ the `H` cmd */
+
+    editor_draw_rows();
+    
+    write(STDOUT_FILENO, "\x1b[H", 3); /* reposition cursor back to top left after drawing `~` */
 }
 
 /*** input ***/
