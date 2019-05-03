@@ -16,10 +16,10 @@
 
 enum editorKey
 {
-    ARROW_LEFT = 'a',
-    ARROW_RIGHT = 'd',
-    ARROW_UP = 'w',
-    ARROW_DOWN = 's'
+    ARROW_LEFT = 1000,
+    ARROW_RIGHT,
+    ARROW_UP,
+    ARROW_DOWN
 };
 
 /*** data ***/
@@ -81,7 +81,7 @@ void enable_raw_mode()
         die("tcsetattr");
 }
 
-char editor_read_key()
+int editor_read_key()
 {
     int nread;
     char c;
@@ -102,16 +102,16 @@ char editor_read_key()
 
         if (seq[0] == '[')
         {
-            switch (seq[1]) /* map arrow keys to wasd */
+            switch (seq[1])
             {
             case 'A':
-                return 'w';
+                return ARROW_UP;
             case 'B':
-                return 's';
+                return ARROW_DOWN;
             case 'C':
-                return 'd';
+                return ARROW_RIGHT;
             case 'D':
-                return 'a';
+                return ARROW_LEFT;
             }
         }
 
@@ -271,20 +271,20 @@ void editor_refresh_screen()
 
 /*** input ***/
 
-void editor_move_cursor(char key)
+void editor_move_cursor(int key)
 {
     switch (key)
     {
-    case 'a':
+    case ARROW_LEFT:
         E.cx--;
         break;
-    case 'd':
+    case ARROW_RIGHT:
         E.cx++;
         break;
-    case 'w':
+    case ARROW_UP:
         E.cy--;
         break;
-    case 's':
+    case ARROW_DOWN:
         E.cy++;
         break;
     }
@@ -292,7 +292,7 @@ void editor_move_cursor(char key)
 
 void editor_process_keypress()
 {
-    char c = editor_read_key();
+    int c = editor_read_key();
 
     switch (c)
     {
@@ -301,10 +301,10 @@ void editor_process_keypress()
         write(STDOUT_FILENO, "\x1b[H", 3);
         exit(0);
         break;
-    case 'w':
-    case 's':
-    case 'a':
-    case 'd':
+    case ARROW_UP:
+    case ARROW_DOWN:
+    case ARROW_LEFT:
+    case ARROW_RIGHT:
         editor_move_cursor(c);
         break;
     }
