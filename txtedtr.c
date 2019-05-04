@@ -419,10 +419,7 @@ void editor_draw_rows(struct abuf *ab)
 		}
 
 		ab_append(ab, "\x1b[K", 3); /* K: erase in line */
-		if (y < E.screenrows - 1)   /* do not draw `\r\n` on the last line */
-		{
-			ab_append(ab, "\r\n", 2);
-		}
+		ab_append(ab, "\r\n", 2);
 	}
 }
 
@@ -566,6 +563,7 @@ void init_editor()
 
 	if (get_window_size(&E.screenrows, &E.screencols) == -1)
 		die("get_window_size");
+	E.screenrows -= 1;
 }
 
 int main(int argc, char *argv[])
