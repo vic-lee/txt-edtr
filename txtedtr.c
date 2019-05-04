@@ -53,6 +53,7 @@ struct editor_config
 	int screencols;
 	int numrows;
 	erow *row;
+	char *filename;
 	struct termios orig_termios;
 };
 
@@ -303,6 +304,9 @@ void editor_append_row(char *s, size_t len)
 
 void editor_open(char *filename)
 {
+	free(E.filename);
+	E.filename = strdup(filename);
+
 	FILE *fp = fopen(filename, "r");
 	if (!fp)
 		die("fopen");
@@ -430,9 +434,18 @@ void editor_draw_status_bar(struct abuf *ab)
 	 *   M cmd: select graphic rendition
 	 * 		Specified attribute 7: invert colors
 	 */
-	
+
 	ab_append(ab, "\x1b[7m", 4);
-	int len = 0;
+
+	char status[80];
+	int len = snprintf(status,
+					   sizeof(status), "%.20s - %d lines",
+					   E.filename ? E.filename : "[No Name",
+					   E.numrows);
+	if (len > E.screencols)
+		len = E.screencols;
+	ab_append(ab, status, len);
+
 	while (len < E.screencols)
 	{
 		ab_append(ab, " ", 1);
@@ -579,6 +592,7 @@ void init_editor()
 	E.coloff = 0;
 	E.numrows = 0;
 	E.row = NULL;
+	E.filename = NULL;
 
 	if (get_window_size(&E.screenrows, &E.screencols) == -1)
 		die("get_window_size");
