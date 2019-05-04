@@ -422,6 +422,11 @@ void editor_move_cursor(int key)
         {
             E.cx++;
         }
+        else if (row && E.cx == row->size)
+        {
+            E.cy++;
+            E.cx = 0;
+        }
         break;
     case ARROW_UP:
         if (E.cy != 0)
