@@ -279,31 +279,41 @@ void editor_draw_rows(struct abuf *ab)
     int y;
     for (y = 0; y < E.screenrows; y++)
     {
-        if (y == E.screenrows / 3)
+        if (y >= E.numrows)
         {
-            char welcome[80];
-            int welcomelen = snprintf(welcome, sizeof(welcome),
-                                      "Baobao's editor! -- version %s",
-                                      KILO_VERSION);
+            if (y == E.screenrows / 3)
+            {
+                char welcome[80];
+                int welcomelen = snprintf(welcome, sizeof(welcome),
+                                          "Baobao's editor! -- version %s",
+                                          KILO_VERSION);
 
-            if (welcomelen > E.screencols)
-                welcomelen = E.screencols;
+                if (welcomelen > E.screencols)
+                    welcomelen = E.screencols;
 
-            int padding = (E.screencols - welcomelen) / 2;
+                int padding = (E.screencols - welcomelen) / 2;
 
-            if (padding)
+                if (padding)
+                {
+                    ab_append(ab, "~", 1);
+                    padding--;
+                }
+                while (padding--)
+                    ab_append(ab, " ", 1);
+
+                ab_append(ab, welcome, welcomelen);
+            }
+            else
             {
                 ab_append(ab, "~", 1);
-                padding--;
             }
-            while (padding--)
-                ab_append(ab, " ", 1);
-
-            ab_append(ab, welcome, welcomelen);
         }
         else
         {
-            ab_append(ab, "~", 1);
+            int len = E.row.size;
+            if (len > E.screencols)
+                len = E.screencols;
+            ab_append(ab, E.row.chars, len);
         }
 
         ab_append(ab, "\x1b[K", 3); /* K: erase in line */
