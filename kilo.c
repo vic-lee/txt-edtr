@@ -260,7 +260,7 @@ void editor_draw_rows(struct abuf *ab)
         {
             char welcome[80];
             int welcomelen = snprintf(welcome, sizeof(welcome),
-                                      "Vic's editor -- version %s",
+                                      "Baobao's editor! -- version %s",
                                       KILO_VERSION);
 
             if (welcomelen > E.screencols)
