@@ -15,7 +15,8 @@
 #include <unistd.h>
 
 /*** defines ***/
-#define KILO_VERSION "0.0.1"
+#define EDTR_VERSION "0.0.1"
+#define EDTR_TAB_STOP 8
 
 #define CTRL_KEY(k) ((k)&0x1f)
 
@@ -247,7 +248,7 @@ void editor_update_row(erow *row)
             tabs++;
 
     free(row->render);
-    row->render = malloc(row->size + tabs * 7 + 1);
+    row->render = malloc(row->size + tabs * (EDTR_TAB_STOP - 1) + 1);
 
     int idx = 0;
     for (j = 0; j < row->size; j++)
@@ -255,7 +256,7 @@ void editor_update_row(erow *row)
         if (row->chars[j] == '\t')
         {
             row->render[idx++] = ' ';
-            while (idx % 8 != 0)
+            while (idx % EDTR_TAB_STOP != 0)
                 row->render[idx++] = ' ';
         }
         else
@@ -367,7 +368,7 @@ void editor_draw_rows(struct abuf *ab)
                 char welcome[80];
                 int welcomelen = snprintf(welcome, sizeof(welcome),
                                           "Baobao's editor! -- version %s",
-                                          KILO_VERSION);
+                                          EDTR_VERSION);
 
                 if (welcomelen > E.screencols)
                     welcomelen = E.screencols;
